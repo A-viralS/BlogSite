@@ -1,5 +1,6 @@
 const { createHmac, randomBytes } = require("crypto");
 const mongoose =require('mongoose');
+const { createTokenForUser } = require("../services/authentication");
 const UserSchema=new mongoose.Schema({
     fullName: {
         type:String,
@@ -48,7 +49,7 @@ UserSchema.pre("save", function (next) {
     next();
   });
   UserSchema.static(
-    "matchPassword",
+    "matchPasswordAndGenerateToken",
     async function (email, password) {
       const user = await this.findOne({ email });
       if (!user) throw new Error("User not found!");
@@ -63,7 +64,8 @@ UserSchema.pre("save", function (next) {
       if (hashedPassword !== userProvidedHash)
         throw new Error("Incorrect Password");
   
-     return user;
+   const token=createTokenForUser(user);
+   return token;
     }
   );
   const User=mongoose.model("user",UserSchema);// user is the name of the collections. it would be shown as users in the terminal as mongo pluralises it 
