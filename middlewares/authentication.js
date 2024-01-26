@@ -9,7 +9,7 @@ function checkForAuthenticationCookie(cookieName) {
 
     try {
       const userPayload = validateToken(tokenCookieValue);
-      req.user = userPayload;
+      req.user = userPayload;//yolo imp 
     } catch (error) {}
 
     return next();

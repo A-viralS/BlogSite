@@ -1,5 +1,5 @@
 const {Router}=require('express');
-
+const Comment=require('../models/comment')
 const multer=require('multer')
 const path= require('path');
 const Blog=require('../models/blog')
@@ -33,9 +33,37 @@ router.get("/add-new", (req, res) => {
     createdBy:req.user._id,
 
  })
+
   
   return res.redirect(`/blog/${blog._id}`)
 
   })
+  router.get('/:id',async(req,res)=>{
+
+    
+    const blog=await Blog.findById(req.params.id).populate("createdBy");//params.id is used when we want to get id from teh url // populate adds a new field in the blog const. this will we refered to the user as it is mentioned in the model. this is done to get the user image on the blog that he has created
+    const comments = await Comment.find({ blogId: req.params.id }).populate(
+        "createdBy"
+      );
+   
+    return res.render('blog',{
+blog,
+user:req.user,
+comments
+    })
+ })
+
+ router.post('/comment/:blogId',async(req,res)=>{
+    const {content}=req.body;
+    await Comment.create({
+content,
+createdBy:req.user._id,
+blogId:req.params.blogId
+    })
+    return res.redirect(`/blog/${req.params.blogId}`);
+ })
+
+
+
 module.exports=router;
 
