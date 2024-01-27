@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express= require('express')
 const path=require('path')
 const app =express();
@@ -11,8 +12,11 @@ app.use(express.urlencoded({extended:false}))
 app.use(cookieParser());
 app.use(checkForAuthenticationCookie("token"))
 app.use(express.static(path.resolve("./public")));
-mongoose.connect('mongodb://localhost:27017/blogsite3').then(e=>console.log('mongoDB connected'));
-PORT=8000;
+mongoose
+.connect
+(process.env.MONGO_URL)
+.then(e=>console.log('mongoDB connected'));
+const PORT=process.env.PORT||8000;
 app.set('view engine','ejs');
 app.set('views',path.resolve('./views'))
 
